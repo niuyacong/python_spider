@@ -26,6 +26,8 @@
     db.createUser({user:"root",pwd:"123456","role":"userAdminAnyDatabase","db":"admin"})
     show users
     使用此账号密码登录可视化工具
+
+    
 2、安装redis 、redis desktop
 
 3、安装mysql  下载and安装  可视化工具 mysql-font
