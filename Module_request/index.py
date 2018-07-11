@@ -13,6 +13,7 @@ data={
 
 # requests.get()
 # requests.post()
+# requests.put()
 
 response=requests.get("http://www.httpbin.org/get",params=data)
 
