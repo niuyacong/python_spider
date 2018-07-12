@@ -46,6 +46,44 @@ doc.parents()        # 可标签 可 css 可id 可嵌套
 doc.siblings()       # 可标签 可 css 可id 可嵌套
 
 
+# 结果不唯一时，需要遍历
+it=doc('').items()
+for ii in it:
+    pass              # 逐一操作
+
+# 获取属性
+d=doc('')
+d.attr('href')
+d.attr.href
+
+# 获取文本
+a=doc('')
+a.text()
+
+# 获取html
+a=doc('')
+a.html()
 
 
+## dom操作
+
+# addClass  removeClass
+
+a=doc('')
+a.addClass('')
+a.removeClass('')
+
+
+# attr css
+a=doc('')
+a.attr('href','www.baidu.com')
+a.css('color','red')
+
+# remove
+a=doc('')
+a.remove('')
+
+# 伪类选择器 css3
+li=doc('li:first-child')
+li=doc('li:contains(second)') # 包含某个文本的
 
