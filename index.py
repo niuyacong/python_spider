@@ -47,8 +47,8 @@
     import pymongo
     client=pymongo.MongoClient('localhost')
     db=client['newtestdb']
-    db['table'].insert(('name':'bob'))
-    db['table'].find_one(('name':'bob'))
+    db['table'].insert({'name':'bob'})
+    db['table'].find_one({'name':'bob'})
 
 9、reids 非关系型数据库 支持队列
     pip3 install redis

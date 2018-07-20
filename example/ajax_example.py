@@ -9,6 +9,15 @@ import json
 from bs4 import BeautifulSoup
 import re
 from selenium import webdriver
+from ajax_example_config import *
+import pymongo
+import os
+from hashlib import md5
+from multiprocessing import pool
+import datetime
+
+client= pymongo.MongoClient(MONGO_URL)
+db=client[MONGO_DB]
 
 def get_page_index(offset,keywords):
     data={
@@ -40,38 +49,75 @@ def parse_page_index(html):
 
 def get_page_detail(url):
      try:
-        brower=webdriver.Chrome();
+        brower=webdriver.PhantomJS();
         brower.get(url)
         return brower.page_source
      except RequestException:
         print('请求索引页出错')
         return None
 
-def parse_page_detail(html):
+def parse_page_detail(url,html):
     soup=BeautifulSoup(html,'lxml')
     title=soup.select('title')[0].get_text()
-    print(title)
-    images_pattern=re.compile('JSON.parse(.*?)siblingList:',re.S)
+    images_pattern=re.compile('"url.*?:(.*?),',re.S)
     result=re.findall(images_pattern,html)
-    
-    if result:
-        data=result[0].strip('\n')
-        l=len(data)-7
-        datas=data[1:l]
-        print(datas)
-        json_data=json.loads(result[0].strip('\n'))
-        print(type(json_data))
-        for item in json_data['sub_images']:
-                print(item)
+    tu_result=[];
+    # print(result)
+    date=datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+    for index in  range(len(result)):
+        if index%4==0:
+            l=len(result[index])-2
+            s=result[index][2:l]
+            content=down_load(s.replace("\\\/","/"))
+            if content is not None:
+                path=save_img(date,content)
+                tu_result.append(path);
+    return {
+        'title':title,
+        'url':url,
+        'result':tu_result
+    }
+
+def save_to_mongo(result):
+    if db[MONGO_TABLE].insert(result):
+        print('存储mongo成功')
+        return True
+    return False
 
 
-def main():
-    html= get_page_index(0,'街拍')
+def down_load(url):
+    print('正在下载：'+url)
+    try:
+        response=requests.get(url)
+        if response.status_code==200:
+            return response.content
+        return None
+    except RequestException:
+        print('请求失败')
+        return None
+def save_img(index,content):
+    print('保存图片')
+    print(index)
+    path='{0}/{1}'.format(os.getcwd()+"/download_pic",index)
+    if not os.path.exists(path):
+        os.makedirs(path)
+    new = content.strip() # or new.split()[index]
+    hs = md5(str(new).encode()).hexdigest()
+    file_path='{0}/{1}.{2}'.format(path,hs ,'jpg')
+    if not os.path.exists(file_path):
+        with open(file_path,'wb') as f:
+            f.write(content)
+            f.close()
+        return file_path
+def main(offset):
+    html= get_page_index(offset,KEYWORDS)
     for url in parse_page_index(html):
-        print(url)
         if url is not None:
             html=get_page_detail(url)
-            parse_page_detail(html)
+            result=parse_page_detail(url,html)
+            if result:save_to_mongo(result)
 
 if __name__=="__main__":
-    main()
+    groups=[x*20 for x in range(GROUP_START,GROUP_END+1)]
+    pool=pool.Pool()
+    pool.map(main,groups)
