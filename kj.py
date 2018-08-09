@@ -13,4 +13,12 @@
     Pywin32  pip install pywin32
     Scrapy   pip install scrapy
  
+
+ scrapy 使用：
+# 创建了一个名为test的项目
+ scrapy startproject test 
+#进入项目
+ cd test
+# 创建一个模块
+ scrapy genspider  quotes quotes.toscrape.com   
 """
