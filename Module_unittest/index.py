@@ -9,9 +9,15 @@ HTMLTestRunner的使用
 HTMLTestRunner.py 为python2+版本
 修复可参考：
 https://www.cnblogs.com/camilla/p/7243044.html
+
+
+
+安装mock
+pip install mock
 """
 import unittest
 import HTMLTestRunner
+import mock
 
 class Test(unittest.TestCase):
 
@@ -37,6 +43,7 @@ class Test(unittest.TestCase):
         # 但是每个testcase有执行顺序 按照名称顺序  在先执行的case中定义全局变量  在后面的case中才能获取到
         # 定义顺序有误，会抛出没有定义的异常
         globals()['userid']=123
+        
         self.assertEqual(True,True,'值不相同')
         self.assertFalse(0,'值不为false')
         self.assertTrue(True,'此为false')
@@ -46,6 +53,11 @@ class Test(unittest.TestCase):
     def test_wne(self):
         # print(userid)
         print('仅以测试setup、teardown')
+
+        # mock模拟接口返回值
+        mock_data=mock.Mock(return_value={'data':'haha'})
+        print(mock_data)
+        # <Mock id='49657784'>
 
 if __name__=="__main__":
 
@@ -58,8 +70,8 @@ if __name__=="__main__":
     suite=unittest.TestSuite()
     suite.addTest(Test('test_wne'))
     suite.addTest(Test('test_test'))
-    
-    # unittest.TextTestRunner().run(suite)
+    unittest.TextTestRunner().run(suite)
+
     # htmltestrunner 应用
-    runner=HTMLTestRunner.HTMLTestRunner(stream=fp,title="this is a first report")
-    runner.run(suite)
+    # runner=HTMLTestRunner.HTMLTestRunner(stream=fp,title="this is a first report")
+    # runner.run(suite)
