@@ -11,6 +11,7 @@ HTMLTestRunner.py 为python2+版本
 https://www.cnblogs.com/camilla/p/7243044.html
 """
 import unittest
+import HTMLTestRunner
 
 class Test(unittest.TestCase):
 
@@ -47,6 +48,10 @@ class Test(unittest.TestCase):
         print('仅以测试setup、teardown')
 
 if __name__=="__main__":
+
+    # 生成测试报告
+    filepath="htmlreport.html"
+    fp=open(filepath,'wb')
     # unittest.main()
 
     # 等同于
@@ -54,4 +59,7 @@ if __name__=="__main__":
     suite.addTest(Test('test_wne'))
     suite.addTest(Test('test_test'))
     
-    unittest.TextTestRunner().run(suite)
+    # unittest.TextTestRunner().run(suite)
+    # htmltestrunner 应用
+    runner=HTMLTestRunner.HTMLTestRunner(stream=fp,title="this is a first report")
+    runner.run(suite)

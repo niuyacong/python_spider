@@ -91,7 +91,7 @@ Version in 0.7.1
 # TODO: simplify javascript using ,ore than 1 class in the class attribute?
 
 import datetime
-import StringIO
+import io
 import sys
 import time
 import unittest
@@ -115,7 +115,7 @@ class OutputRedirector(object):
         self.fp = fp
 
     def write(self, s):
-        self.fp.write(s)
+        self.fp.write(bytes(s,'UTF-8'))
 
     def writelines(self, lines):
         self.fp.writelines(lines)
@@ -536,7 +536,7 @@ class _TestResult(TestResult):
     def startTest(self, test):
         TestResult.startTest(self, test)
         # just one buffer for both stdout and stderr
-        self.outputBuffer = StringIO.StringIO()
+        self.outputBuffer = io.BytesIO()
         stdout_redirector.fp = self.outputBuffer
         stderr_redirector.fp = self.outputBuffer
         self.stdout0 = sys.stdout
@@ -628,7 +628,7 @@ class HTMLTestRunner(Template_mixin):
         test(result)
         self.stopTime = datetime.datetime.now()
         self.generateReport(test, result)
-        print >>sys.stderr, '\nTime Elapsed: %s' % (self.stopTime-self.startTime)
+        print('\nTime Elapsed: %s' % (self.stopTime-self.startTime),file=sys.stderr)
         return result
 
 
@@ -639,7 +639,7 @@ class HTMLTestRunner(Template_mixin):
         classes = []
         for n,t,o,e in result_list:
             cls = t.__class__
-            if not rmap.has_key(cls):
+            if not cls in rmap:
                 rmap[cls] = []
                 classes.append(cls)
             rmap[cls].append((n,t,o,e))
@@ -763,15 +763,15 @@ class HTMLTestRunner(Template_mixin):
         if isinstance(o,str):
             # TODO: some problem with 'string_escape': it escape \n and mess up formating
             # uo = unicode(o.encode('string_escape'))
-            uo = o.decode('latin-1')
-        else:
             uo = o
+        else:
+            uo = o.decode('utf-8')
         if isinstance(e,str):
             # TODO: some problem with 'string_escape': it escape \n and mess up formating
             # ue = unicode(e.encode('string_escape'))
-            ue = e.decode('latin-1')
-        else:
             ue = e
+        else:
+            ue = e.decode('utf-8')
 
         script = self.REPORT_TEST_OUTPUT_TMPL % dict(
             id = tid,
