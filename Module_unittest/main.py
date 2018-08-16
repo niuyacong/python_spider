@@ -8,6 +8,7 @@ from uts.runmain import RunMethod
 from uts.get_data import GetData
 from uts.common_utils import CommonUtils
 from uts.depended_data import DependdentData
+from uts.send_email import SendMail
 class RunTest:
     def __init__(self):
         self.run_method=RunMethod()
@@ -15,6 +16,8 @@ class RunTest:
         self.utils=CommonUtils()
     def go_on_run(self):
         res=None
+        pass_count=[]
+        fail_count=[]
         rows_count=self.data.get_case_lines()
         for i in range(1,rows_count):
             url=self.data.get_url(i)
@@ -34,11 +37,18 @@ class RunTest:
                 print(res)
                 if self.utils.is_contains(expect_data,res):
                     self.data.insert_data(i,'测试成功')
+                    pass_count.append(i)
                     print('测试成功')
                 else:
                     self.data.insert_data(i,'测试失败')
+                    fail_count.append(i)
                     print('测试失败')
             # return res
+            mail=SendMail()
+            mail.send_main(pass_count,fail_count)
+
+            print(pass_count)
+            print(fail_count)
     
 
 
