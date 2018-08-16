@@ -57,3 +57,30 @@ class GetData:
         if expect_data =='':
             return None
         return expect_data
+
+    def insert_data(self,rows,val):
+        col=data_config.get_result()
+        self.exec_excel.write_value(rows,col,val)
+
+    # 获取依赖数据key
+    def get_case_data(self,rows):
+        col=data_config.get_data_depend()
+        data=self.exec_excel.get_cell_value(rows,int(col))
+        if data=='':
+            return None
+        return data
+
+    def get_case_id(self,rows):
+        col=data_config.get_case_depend()
+        data= self.exec_excel.get_cell_value(rows,int(col))
+        if data=='':
+            return None
+        return data
+
+    def get_case_field(self,rows):
+        col=data_config.get_field_depend()
+        data= self.exec_excel.get_cell_value(rows,int(col))
+        if data=='':
+            return None
+        return data
+        
