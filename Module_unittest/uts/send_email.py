@@ -7,7 +7,7 @@ class SendMail:
 
     user="niuya_cong@163.com"
     host="smtp.163.com"
-    password="0000"
+    password="0000dou0000"
     def Send_mail(self,user_list,sub,content):
         send_user="niuya_cong<"+SendMail.user+">"
         message=MIMEText(content,_subtype="plain",_charset="utf-8")
